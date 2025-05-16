@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model usuarios {
+  id                    Int       @id @default(autoincrement()) @db.UnsignedInt
+  token                 String    @unique(map: "token") @db.VarChar(12)
+  nome                  String?   @db.VarChar(60)
+  dataNascimento        DateTime? @db.Date
+  email                 String    @unique(map: "email") @db.VarChar(255)
+  senha                 String?   @db.VarChar(64)
+  telefone              String?   @db.VarChar(45)
+  endereco              String?   @db.VarChar(70)
+  numero                String?   @db.VarChar(20)
+  complemento           String?   @db.VarChar(60)
+  bairro                String?   @db.VarChar(50)
+  cidade                String?   @db.VarChar(35)
+  estado                String?   @db.VarChar(35)
+  cep                   String?   @db.VarChar(20)
+  foto                  String?   @db.VarChar(255)
+  status                String    @default("ATIVO") @db.VarChar(15)
+  roles                 String?   @db.VarChar(50)
+  perfil                String?   @db.VarChar(50)
+  dataUltimoAcesso      DateTime? @db.DateTime(0)
+  dataUltimaModificacao DateTime  @default(dbgenerated("'now()'")) @db.Timestamp(0)
+  tokenSenha            String?   @db.VarChar(50)
+  dataSenha             DateTime? @db.Timestamp(0)
+  data                  DateTime  @default(dbgenerated("(now())")) @db.Timestamp(0)
+  dataExclusao          DateTime? @db.Timestamp(0)
+}
