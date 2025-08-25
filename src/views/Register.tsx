@@ -2,7 +2,6 @@
 
 // React Imports
 import { useState } from 'react'
-
 import { useRouter } from 'next/navigation'
 
 // Next Imports
@@ -18,6 +17,7 @@ import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Divider from '@mui/material/Divider'
+import MenuItem from '@mui/material/MenuItem'
 
 // Third-party Imports
 import classnames from 'classnames'
@@ -32,8 +32,6 @@ import CustomTextField from '@core/components/mui/TextField'
 // Hook Imports
 import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
-
-
 
 // Styled Custom Components
 const RegisterIllustration = styled('img')(({ theme }) => ({
@@ -62,9 +60,18 @@ const MaskImg = styled('img')({
 const Register = ({ mode }: { mode: SystemMode }) => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
+  const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
-
+  const [dataNascimento, setDataNascimento] = useState('')
+  const [telefone, setTelefone] = useState('')
+  const [endereco, setEndereco] = useState('')
+  const [numero, setNumero] = useState('')
+  const [complemento, setComplemento] = useState('')
+  const [bairro, setBairro] = useState('')
+  const [cidade, setCidade] = useState('')
+  const [estado, setEstado] = useState('')
+  const [cep, setCep] = useState('')
   const [error, setError] = useState('')
 
   const darkImg = '/images/pages/auth-mask-dark.png'
@@ -92,28 +99,47 @@ const Register = ({ mode }: { mode: SystemMode }) => {
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
+  const estadosBrasileiros = [
+    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 
+    'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 
+    'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+  ];
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-   try {
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      body: JSON.stringify({ email, senha }),
-      headers: { "Content-Type": "application/json" },
-    });
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify({ 
+          nome, 
+          email, 
+          senha,
+          dataNascimento,
+          telefone,
+          endereco,
+          numero,
+          complemento,
+          bairro,
+          cidade,
+          estado,
+          cep
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      router.push("/login");
-    } else {
-      setError(data.error || 'Erro ao registrar');
+      if (res.ok) {
+        router.push("/login");
+      } else {
+        setError(data.error || 'Erro ao registrar');
+      }
+    } catch (err) {
+      console.error('Erro inesperado:', err);
+      setError('Erro inesperado no registro');
     }
-  } catch (err) {
-    console.error('Erro inesperado:', err);
-    setError('Erro inesperado no registro');
-  }
-};
+  };
 
   return (
     <div className='flex bs-full justify-center'>
@@ -128,64 +154,151 @@ const Register = ({ mode }: { mode: SystemMode }) => {
         <RegisterIllustration src={characterIllustration} alt='character-illustration' />
         {!hidden && <MaskImg alt='mask' src={authBackground} />}
       </div>
-      <div className='flex justify-center items-center bs-full bg-backgroundPaper !min-is-full p-6 md:!min-is-[unset] md:p-12 md:is-[480px]'>
+      <div className='flex justify-center items-center bs-full bg-backgroundPaper !min-is-full p-6 md:!min-is-[unset] md:p-12 md:is-[700px]'>
         <Link href={'/login'} className='absolute block-start-5 sm:block-start-[33px] inline-start-6 sm:inline-start-[38px]'>
           <Logo />
         </Link>
-        <div className='flex flex-col gap-6 is-full sm:is-auto md:is-full sm:max-is-[400px] md:max-is-[unset] mbs-8 sm:mbs-11 md:mbs-0'>
+        <div className='flex flex-col gap-6 is-full sm:is-auto md:is-full sm:max-is-[600px] md:max-is-[unset] mbs-8 sm:mbs-11 md:mbs-0'>
           <div className='flex flex-col gap-1'>
-            <Typography variant='h4'>Adventure starts here 🚀</Typography>
-            <Typography>Make your app management easy and fun!</Typography>
+            <Typography variant='h4'>A aventura começa aqui! 🚀</Typography>
+            <Typography>Faça seu cadastro para acessar o sistema</Typography>
           </div>
-          <form onSubmit={handleRegister} className='flex flex-col gap-6'>
-            <CustomTextField
-              fullWidth
-              label='Email'
-              placeholder='Enter your email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <CustomTextField
-              fullWidth
-              label='Password'
-              placeholder='············'
-              type={isPasswordShown ? 'text' : 'password'}
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position='end'>
-                      <IconButton edge='end' onClick={handleClickShowPassword} onMouseDown={(e) => e.preventDefault()}>
-                        <i className={isPasswordShown ? 'tabler-eye-off' : 'tabler-eye'} />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+          <form onSubmit={handleRegister} className='flex flex-col gap-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <CustomTextField
+                fullWidth
+                label='Nome Completo'
+                placeholder='Digite o seu nome completo'
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                required
+              />
+              <CustomTextField
+                fullWidth
+                label='Email'
+                type='email'
+                placeholder='Digite o seu email'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <CustomTextField
+                fullWidth
+                label='Senha'
+                placeholder='············'
+                type={isPasswordShown ? 'text' : 'password'}
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                required
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <IconButton edge='end' onClick={handleClickShowPassword} onMouseDown={(e) => e.preventDefault()}>
+                          <i className={isPasswordShown ? 'tabler-eye-off' : 'tabler-eye'} />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+              <CustomTextField
+                fullWidth
+                label='Data de Nascimento'
+                type='date'
+                value={dataNascimento}
+                onChange={(e) => setDataNascimento(e.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                required
+              />
+              <CustomTextField
+                fullWidth
+                label='Telefone'
+                placeholder='(00) 00000-0000'
+                value={telefone}
+                onChange={(e) => setTelefone(e.target.value)}
+              />
+              <CustomTextField
+                fullWidth
+                label='CEP'
+                placeholder='00000-000'
+                value={cep}
+                onChange={(e) => setCep(e.target.value)}
+              />
+              <CustomTextField
+                fullWidth
+                label='Endereço'
+                placeholder='Rua, Avenida, etc.'
+                value={endereco}
+                onChange={(e) => setEndereco(e.target.value)}
+              />
+              <CustomTextField
+                fullWidth
+                label='Número'
+                placeholder='Número'
+                value={numero}
+                onChange={(e) => setNumero(e.target.value)}
+              />
+              <CustomTextField
+                fullWidth
+                label='Complemento'
+                placeholder='Apartamento, bloco, etc.'
+                value={complemento}
+                onChange={(e) => setComplemento(e.target.value)}
+              />
+              <CustomTextField
+                fullWidth
+                label='Bairro'
+                placeholder='Bairro'
+                value={bairro}
+                onChange={(e) => setBairro(e.target.value)}
+              />
+              <CustomTextField
+                fullWidth
+                label='Cidade'
+                placeholder='Cidade'
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+              />
+              <CustomTextField
+                fullWidth
+                select
+                label='Estado'
+                value={estado}
+                onChange={(e) => setEstado(e.target.value)}
+              >
+                {estadosBrasileiros.map((estado) => (
+                  <MenuItem key={estado} value={estado}>
+                    {estado}
+                  </MenuItem>
+                ))}
+              </CustomTextField>
+            </div>
+            
             {error && <Typography color='error'>{error}</Typography>}
             <FormControlLabel
-              control={<Checkbox />}
+              control={<Checkbox required />}
               label={
                 <>
-                  <span>I agree to </span>
-                  <Link className='text-primary' href='/' onClick={(e) => e.preventDefault()}>
-                    privacy policy & terms
+                  <span>Eu concordo com os </span>
+                  <Link className='text-primary' href='/termos' onClick={(e) => e.preventDefault()}>
+                    termos de uso e política de privacidade
                   </Link>
                 </>
               }
             />
-            <Button fullWidth variant='contained' type='submit'>
-              Sign Up
+            <Button fullWidth variant='contained' type='submit' size='large'>
+              Cadastrar
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
-              <Typography>Already have an account?</Typography>
+              <Typography>Já possui uma conta?</Typography>
               <Typography component={Link} href='/login' color='primary.main'>
-                Sign in instead
+                Ir para o login
               </Typography>
             </div>
-            <Divider className='gap-2'>or</Divider>
+            <Divider className='gap-2'>ou</Divider>
           </form>
         </div>
       </div>
